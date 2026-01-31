@@ -46,9 +46,7 @@ button{
 
 button:hover{background:#5f22c9;}
 
-.lang{
-    margin-bottom:10px;
-}
+.lang{margin-bottom:10px;}
 
 .note{
     background:#fdeaea;
@@ -91,27 +89,21 @@ button:hover{background:#5f22c9;}
     <button onclick="setLang('en')">EN</button>
 </div>
 
-<h2 id="title">حساب المعدل</h2>
+<h2 id="title"></h2>
 
 <!-- الصفحة الأولى -->
 <div id="step1">
-    <p id="modulesText">أدخل عدد المواد</p>
+    <p id="modulesText"></p>
     <input type="number" id="modules" min="1">
     <br><br>
-    <button id="confirmBtn" onclick="goToStep2()">تأكيد</button>
+    <button id="confirmBtn" onclick="goToStep2()"></button>
 </div>
 
 <!-- الصفحة الثانية -->
 <div id="step2" style="display:none;">
-
-    <div class="note" id="noteText">
-        📌 تنويه: إذا كانت المادة بدون تقويم مستمر (CC) ومعاملها = 1،
-        تُحسب علامة الامتحان فقط.
-    </div>
-
+    <div class="note" id="noteText"></div>
     <div id="marks"></div>
-
-    <button id="calcBtn" onclick="calculate()">حساب المعدل</button>
+    <button id="calcBtn" onclick="calculate()"></button>
 </div>
 
 <div id="result"></div>
@@ -122,6 +114,7 @@ button:hover{background:#5f22c9;}
 
 <script>
 let lang="ar";
+let lastAvg=null;
 
 const text={
 ar:{
@@ -129,29 +122,29 @@ title:"حساب المعدل",
 modules:"أدخل عدد المواد",
 confirm:"تأكيد",
 calc:"حساب المعدل",
-note:"📌 تنويه: إذا كانت المادة بدون تقويم مستمر (CC) ومعاملها = 1، تُحسب علامة الامتحان فقط.",
+note:"📌 تنويه: اترك خانة CC فارغة إذا كانت غير موجودة، في هذه الحالة تُحسب علامة الامتحان فقط.",
 mark:"المادة",
 cc:"CC",
 exam:"الامتحان",
 coef:"المعامل",
-success:"🌟 نجاحك اليوم هو خطوة جديدة نحو مستقبل أفضل.",
-fail:"🌱 لا تيأس، ما زالت لديك فرصة، بالاجتهاد والتركيز ستصل للنجاح.",
-avg:"المعدل العام",
-need:"المعدل المطلوب في الفصل الثاني للنجاح:"
+success:"🌟 أحسنت! نجاحك اليوم خطوة جديدة نحو مستقبل أفضل.",
+fail:"🌱 لا تيأس، ما زالت لديك فرصة، بالاجتهاد ستصل.",
+avg:"معدل الفصل الأول",
+need:"معدل الفصل الثاني المطلوب للنجاح:"
 },
 en:{
 title:"Average Calculator",
 modules:"Enter number of modules",
 confirm:"Confirm",
 calc:"Calculate average",
-note:"📌 Note: If the module has no CC and coefficient = 1, only the exam mark is counted.",
+note:"📌 Note: Leave CC empty if it does not exist. Only exam mark will be counted.",
 mark:"Module",
 cc:"CC",
 exam:"Exam",
 coef:"Coefficient",
-success:"🌟 Your success today is a step towards a better future.",
-fail:"🌱 Don't give up, you still have a chance. Keep working.",
-avg:"General average",
+success:"🌟 Well done! Your success is a new step forward.",
+fail:"🌱 Don't give up, you still have a chance.",
+avg:"Semester 1 average",
 need:"Required semester 2 average to pass:"
 }
 };
@@ -164,6 +157,8 @@ document.getElementById("modulesText").innerText=text[l].modules;
 document.getElementById("confirmBtn").innerText=text[l].confirm;
 document.getElementById("calcBtn").innerText=text[l].calc;
 document.getElementById("noteText").innerText=text[l].note;
+
+if(lastAvg!==null) showResult(lastAvg);
 }
 
 function goToStep2(){
@@ -190,19 +185,23 @@ document.getElementById("marks").innerHTML=html;
 }
 
 function calculate(){
-const n=document.querySelectorAll("#marks div").length;
+const n=document.querySelectorAll("#marks > div").length;
 let total=0,totalCoef=0;
 
 for(let i=1;i<=n;i++){
-const ccVal=document.getElementById("cc"+i).value;
+const cc=document.getElementById("cc"+i).value;
 const exam=parseFloat(document.getElementById("exam"+i).value)||0;
 const coef=parseFloat(document.getElementById("coef"+i).value)||1;
-let note=(ccVal==="")?exam:(parseFloat(ccVal)*0.4+exam*0.6);
+let note=(cc==="")?exam:(parseFloat(cc)*0.4+exam*0.6);
 total+=note*coef;
 totalCoef+=coef;
 }
 
-const avg=total/totalCoef;
+lastAvg=total/totalCoef;
+showResult(lastAvg);
+}
+
+function showResult(avg){
 const res=document.getElementById("result");
 res.style.display="block";
 
@@ -225,4 +224,3 @@ setLang("ar");
 
 </body>
 </html>
-
